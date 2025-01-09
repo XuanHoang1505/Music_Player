@@ -15,6 +15,9 @@ const btnPrev = $('.btn-prev')
 const btnRandom = $('.btn-random')
 const btnRepeat = $('.btn-repeat')
 const playList = $('.playlist')
+const currentTime = $('#current-time')
+const durationTime = $('#duration-time')
+const timeDisplay = $('#time-display')
 
 const app = {
     currentIndex: 0,
@@ -37,14 +40,14 @@ const app = {
                 "https://th.bing.com/th/id/R.446b967b6923822edd64e55a30e85767?rik=aVIAqyKsvGNUyg&pid=ImgRaw&r=0"
         },
         {
-            name: "Nightcore - Comes To You (Speed Up)",
+            name: "Nightcore - Comes To You",
             singer: "Justin Bieber",
             path:
                 "./audio/Nightcore - Comes To You (Speed Up).mp3",
             image: "https://i.ytimg.com/vi/GCP3rWkBr7w/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBS6rI4BrtpC1cy9gLl82HIj3D2dw"
         },
         {
-            name: "LỆ LƯU LY - VŨ PHỤNG TIÊN X DT TẬP RAP X DRUM7  OFFICIAL MUSIC VIDEO",
+            name: "Lệ lưu ly",
             singer: "VŨ PHỤNG TIÊN",
             path: "./audio/LỆ LƯU LY - VŨ PHỤNG TIÊN X DT TẬP RAP X DRUM7  OFFICIAL MUSIC VIDEO.mp3",
             image:
@@ -58,10 +61,10 @@ const app = {
                 "https://th.bing.com/th/id/OIP.pzbdSWAdU_n7KS_BkYvMdwHaEK?rs=1&pid=ImgDetMain"
         },
         {
-            name: "2AM - JustaTee  feat Big Daddy Official Audio",
+            name: "2AM - JustaTee  feat Big Daddy",
             singer: "JustaTee",
             path:
-                "./audio/T2AM - JustaTee  feat Big Daddy Official Audio.mp3",
+                "./audio/2AM - JustaTee  feat Big Daddy Official Audio.mp3",
             image:
                 "https://th.bing.com/th/id/OIP.JpMw0_mQkh6u25Ph39WecQAAAA?rs=1&pid=ImgDetMain"
         }
@@ -142,10 +145,22 @@ const app = {
             if (audio.duration) {
                 const progressPercent = Math.floor(audio.currentTime / audio.duration * 100)
                 progress.value = progressPercent
+        
+                const currentMinutes = Math.floor(audio.currentTime / 60)
+                const currentSeconds = Math.floor(audio.currentTime % 60)
+                const durationMinutes = Math.floor(audio.duration / 60)
+                const durationSeconds = Math.floor(audio.duration % 60)
+                
+                const formattedCurrentTime = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds}`
+                const formattedDurationTime = `${durationMinutes}:${durationSeconds < 10 ? '0' : ''}${durationSeconds}`
+                
+                const timeContent = `${formattedCurrentTime} / ${formattedDurationTime}` 
+                timeDisplay.textContent = timeContent
             }
         }
+        
 
-        // xuử lý khi tua
+        // xử lý khi tua
         progress.oninput = function (e) {
             audio.currentTime = audio.duration * e.target.value / 100
         }
@@ -159,6 +174,7 @@ const app = {
             }
             audio.play()
             _this.render()
+            _this.scrollToActiveSong()
         }
         //Xử lý prev song
         btnPrev.onclick = function () {
@@ -169,6 +185,8 @@ const app = {
             }
             audio.play()
             _this.render()
+            _this.scrollToActiveSong()
+
         }
 
         //Xử lý random song
@@ -207,13 +225,15 @@ const app = {
             }
         }
     },
-    scrollToActiveSong: function(){
-        setTimeout(()=>{
+    scrollToActiveSong: function () {
+        setTimeout(() => {
             $('.song.active').scrollIntoView({
                 behavior: 'smooth',
-                block: 'nearest'
+                block: 'end',
+                inline: 'nearest'
             })
-        },300)
+        }, 250)
+
     }, 
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name
@@ -263,11 +283,7 @@ const app = {
         this.loadCurrentSong()
 
         this.render()
-        
-        //Hiển thị trang tháithái
-        btnRandom.classList.toggle('active',_this.isRandom) 
-        btnRepeat.classList.toggle('active',_this.isRepeat)   
-
+         
     }
 
 }
